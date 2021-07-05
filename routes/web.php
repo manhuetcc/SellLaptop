@@ -40,3 +40,7 @@ Route::resource(
         'names' => 'adminProduct'
     ]
 );
+Route::get('/{url}', function () {
+    return view('welcome');
+})
+    ->where('url', '[A-Za-z0-9/-]+');

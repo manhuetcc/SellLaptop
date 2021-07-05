@@ -18,6 +18,27 @@ window.Vue = require('vue').default;
 
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
+// import vue router
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import Profile from './Components/Profile.vue'
+import Index from './Components/Index.vue'
+Vue.use(VueRouter)
+window.axios = require('axios');
+const router = new VueRouter({
+    mode: 'history',
+    routes: [{
+            path: '/profile',
+            name: 'Profile',
+            component: Profile,
+        },
+        {
+            path: '/index',
+            name: 'Index',
+            component: Index,
+        }
+    ],
+})
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 
@@ -26,7 +47,8 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
-
+Vue.prototype.eventBus = new Vue();
 const app = new Vue({
     el: '#app',
+    router,
 });

@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'avatar',
     ];
 
     /**
@@ -45,10 +46,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo('App\Models\Role', 'role_id');
     }
-    /*public function orders()
+    public function orders()
     {
         return $this->hasMany('App\Models\Order');
-    }*/
+    }
     public function comments()
     {
         return $this->hasMany('App\Models\Comment');
