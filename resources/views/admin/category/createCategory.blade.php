@@ -19,15 +19,11 @@
       <div class="card-body col-md-8">
         <div class="form-group">
           <label for="categoryName">Tên danh mục mới</label>
-          <input type="text" name="name" class="form-control form-control-border" id="categoryName" placeholder="Điện thoại...">
+          <input type="text" name="name" class="form-control form-control-border" id="categoryName" placeholder="Tên Hãng">
         </div>
         <div class="form-group">
-          <label for="shortDesc">Mô tả ngắn</label>
-          <input type="text" name="short_desc" class="form-control form-control-border" id="shortDesc" placeholder="Tập hợp các dòng điện thoại mới nhất...">
-        </div>
-        <div class="form-group">
-          <label for="fullDesc">Mô tả chi tiết</label>
-          <textarea class="form-control" name="full_desc" id="fullDesc" rows="5" placeholder="Cung cấp điện thoại uy tín..."></textarea>
+          <label for="desc">Mô tả </label>
+          <input type="text" name="desc" class="form-control form-control-border" id="desc" placeholder="Tập hợp các dòng laptop">
         </div>
         <div>          
           <button type="submit" class="btn btn-success float-right">Xác nhận</button>

@@ -30,8 +30,8 @@
             @foreach ($listInfo as $info)
             <tr>
                 <td>{{ $loop->index+1 }}</td>
-                <td>{{ $info->attribute }}</td>
-                <td>{{ $info->information }}</td>
+                <td>{{ $info->property }}</td>
+                <td>{{ $info->feature }}</td>
                 <td >
                     <a href="{{ route('editInfoProduct', [$product->id, $info->id]) }}" class="btn btn-warning btn-sm" >Sửa</a>                    
                     <form action="{{ route('deleteInfoProduct', [$product->id, $info->id]) }}" method="POST" style="display: inline;">

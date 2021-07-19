@@ -22,8 +22,15 @@ window.Vue = require('vue').default;
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Profile from './Components/Profile.vue'
+import Products from './Components/Products.vue'
+import Main from './Components/Main.vue'
 import Index from './Components/Index.vue'
-Vue.use(VueRouter)
+import Search from './Components/Search.vue'
+import ProductDetails from './Components/ProductDetails.vue'
+import OrderDetail from './Components/OrderDetail.vue'
+import ListOrder from './Components/ListOrder.vue'
+import Category from './Components/Category.vue'
+Vue.use(VueRouter);
 window.axios = require('axios');
 const router = new VueRouter({
     mode: 'history',
@@ -33,10 +40,52 @@ const router = new VueRouter({
             component: Profile,
         },
         {
-            path: '/index',
-            name: 'Index',
-            component: Index,
+            path: '/product',
+            name: 'Product',
+            component: Main,
+            children: [{
+                    path: '/products',
+                    name: 'Products',
+                    component: Products,
+                },
+
+                {
+                    path: '/index',
+                    name: 'Home',
+                    component: Index,
+                },
+                {
+                    path: 'search/:keyword',
+                    name: 'search',
+                    component: Search,
+                    props: true,
+                },
+                {
+                    path: ':id',
+                    name: 'ProductDetails',
+                    component: ProductDetails,
+                    props: true
+                },
+                {
+                    path: '/category/:id',
+                    name: 'Category',
+                    component: Category,
+                    props: true
+                },
+            ]
+        },
+        {
+            path: '/order/:id',
+            name: 'orderdetail',
+            component: OrderDetail,
+            props: true
+        },
+        {
+            path: '/listorder',
+            name: 'ListOrder',
+            component: ListOrder,
         }
+
     ],
 })
 

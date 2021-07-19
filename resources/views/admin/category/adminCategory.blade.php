@@ -31,7 +31,7 @@
             <tr>
                 <td>{{ $loop->index+1 }}</td>
                 <td>{{ $category->name }}</td>
-                <td>{{ $category->short_desc }}</td>
+                <td>{{ $category->desc }}</td>
                 <td >
                     <a href="{{ route('adminCategory.edit', $category->id) }}" class="btn btn-warning btn-sm" >Sửa</a>                    
                     <form action="{{ route('adminCategory.destroy', $category->id) }}" method="POST" style="display: inline;">

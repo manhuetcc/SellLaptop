@@ -20,11 +20,11 @@
       <div class="card-body col-md-8">
         <div class="form-group">
           <label for="infoName">Tên thông số</label>
-          <input type="text" name="attribute" class="form-control form-control-border" id="infoName" value="{{ $info->attribute }}">
+          <input type="text" name="property" class="form-control form-control-border" id="infoName" value="{{ $info->property }}">
         </div>
         <div class="form-group">
           <label for="infoValue">Mô tả</label>
-          <input type="text" name="imformation" class="form-control form-control-border" id="infoValue" value="{{ $info->information }}">
+          <input type="text" name="feature" class="form-control form-control-border" id="infoValue" value="{{ $info->feature }}">
         </div>
         <div>          
           <button type="submit" class="btn btn-success float-right" onclick="confirmEdit()">Hoàn thành</button>

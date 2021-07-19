@@ -242,21 +242,21 @@ return [
             'text' => 'search',
         ],
         [
-            'text' => 'blog',
+            'text' => '',
             'url'  => 'admin/blog',
             'can'  => 'manage-blog',
         ],
         [
-            'text'        => 'pages',
-            'url'         => 'admin/pages',
+            'text'        => 'Danh mục',
+            'url'         => 'admin/categories',
             'icon'        => 'far fa-fw fa-file',
             'label'       => 4,
             'label_color' => 'success',
         ],
-        ['header' => 'account_settings'],
+        //['header' => 'account_settings'],
         [
-            'text' => 'profile',
-            'url'  => 'admin/settings',
+            'text' => 'Sản phẩm',
+            'url'  => 'admin/products',
             'icon' => 'fas fa-fw fa-user',
         ],
         [
@@ -275,26 +275,6 @@ return [
                 [
                     'text'    => 'level_one',
                     'url'     => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'level_two',
-                            'url'  => '#',
-                        ],
-                        [
-                            'text'    => 'level_two',
-                            'url'     => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url'  => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url'  => '#',
-                                ],
-                            ],
-                        ],
-                    ],
                 ],
                 [
                     'text' => 'level_one',
@@ -302,21 +282,21 @@ return [
                 ],
             ],
         ],
-        ['header' => 'labels'],
+        ['header' => 'Trạng thái đơn hàng'],
         [
-            'text'       => 'important',
+            'text'       => 'Chờ xác nhận',
             'icon_color' => 'red',
-            'url'        => '#',
+            'url'        => 'admin/order/listordered',
         ],
         [
-            'text'       => 'warning',
+            'text'       => 'Đang giao hàng',
             'icon_color' => 'yellow',
-            'url'        => '#',
+            'url'        => 'admin/order/listconfirmed',
         ],
         [
-            'text'       => 'information',
+            'text'       => 'Hoàn thành',
             'icon_color' => 'cyan',
-            'url'        => '#',
+            'url'        => 'admin/order/listcompleted',
         ],
     ],
 

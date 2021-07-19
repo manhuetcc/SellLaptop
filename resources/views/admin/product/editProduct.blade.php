@@ -46,12 +46,8 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="shortDesc">Mô tả ngắn</label>
-          <input type="text" name="short_desc" class="form-control form-control-border" id="shortDesc" value="{{ $product->short_desc }}">
-        </div>
-        <div class="form-group">
-          <label for="fullDesc">Mô tả chi tiết</label>
-          <textarea class="form-control" name="full_desc" id="fullDesc" rows="3">{{ $product->full_desc }}</textarea>
+          <label for="shortDesc">Mô tả</label>
+          <textarea class="form-control" name="short_desc" id="shortDesc" rows="3">{{ $product->short_desc }}</textarea>
         </div>
         <div class="form-group">
           <label for="productPrice">Giá bán sản phẩm</label>
@@ -62,7 +58,7 @@
           <a class="btn btn-app" href="{{ route('listInfoProduct', $product->id) }}">
             <i class="fas fa-edit"></i> Edit
           </a>
-          <textarea class="form-control" rows="5" disabled>@foreach ($product->info_products as $info){{ $info->attribute }}: {{ $info->information }}&#13;&#10;@endforeach</textarea>
+          <textarea class="form-control" rows="5" disabled>@foreach ($product->info_products as $info){{ $info->property }}: {{ $info->feature }}&#13;&#10;@endforeach</textarea>
         </div>
         <div class="form-group">
           <label>Trạng thái sản phẩm</label>          
@@ -75,14 +71,6 @@
               @endif
             @endforeach          
           </select>
-        </div>
-        <div class="custom-control custom-switch">
-          @if ($product->star)
-          <input name="star" type="checkbox" class="custom-control-input" id="productStar" checked>
-          @else
-          <input name="star" type="checkbox" class="custom-control-input" id="productStar">
-          @endif
-          <label class="custom-control-label" for="productStar">Sản phẩm nổi bật?</label>
         </div>
         <div>
           <br>          

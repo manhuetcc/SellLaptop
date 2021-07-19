@@ -10,23 +10,23 @@ class Product extends Model
 {
     use SoftDeletes;
     protected $fillable = [
-        'name', 'category_id', 'image', 'price', 'status_product_id', 'short_desc', 'short_desc',
+        'name', 'category_id', 'image', 'thumbnail', 'price', 'status_product_id', 'short_desc', 'short_desc',
     ];
     public function category()
     {
-        return $this->belongsTo('App\Models\Category','category_id');
+        return $this->belongsTo('App\Models\Category', 'category_id');
     }
     public function orders()
     {
         return $this->hasMany('App\Models\Order');
     }
-    public function status_products()
+    public function info_products()
     {
-        return $this->hasMany('App\Models\StatusProduct');
+        return $this->hasMany('App\Models\InfoProduct');
     }
-    public function status_order()
+    public function status_product()
     {
-        return $this->belongsTo('App\Models\StatusOrder','status_order_id');
+        return $this->belongsTo('App\Models\StatusProduct', 'status_product_id');
     }
     public function comments()
     {

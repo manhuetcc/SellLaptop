@@ -46,12 +46,8 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="shortDesc">Mô tả ngắn</label>
-          <input type="text" name="short_desc" class="form-control form-control-border" id="shortDesc" placeholder="Tập hợp các dòng điện thoại mới nhất...">
-        </div>
-        <div class="form-group">
-          <label for="fullDesc">Mô tả chi tiết</label>
-          <textarea class="form-control" name="full_desc" id="fullDesc" rows="3" placeholder="Cung cấp điện thoại uy tín..."></textarea>
+          <label for="Desc">Mô tả ngắn</label>
+          <input type="text" name="desc" class="form-control form-control-border" id="Desc" placeholder="Tập hợp các dòng laptop mới nhất...">
         </div>
         <div class="form-group">
           <label for="productPrice">Giá bán sản phẩm</label>
@@ -68,10 +64,6 @@
               @endif
             @endforeach          
           </select>
-        </div>
-        <div class="custom-control custom-switch">
-          <input name="star" type="checkbox" class="custom-control-input" id="productStar">
-          <label class="custom-control-label" for="productStar">Sản phẩm nổi bật?</label>
         </div>
         <div>
           <br>          

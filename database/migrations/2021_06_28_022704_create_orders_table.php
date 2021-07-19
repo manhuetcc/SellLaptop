@@ -19,9 +19,9 @@ class CreateOrdersTable extends Migration
             $table->unsignedBigInteger('product_id');
             $table->integer('quantity')->default(1);
             $table->bigInteger('price');
-            $table->string('full_name');
             $table->string('address');
             $table->string('phone_number');
+            $table->unsignedInteger('status_order_id');
             $table->text('note')->nullable();
             $table->timestamp('shipped_date')->nullable();
             $table->timestamp('completed_date')->nullable();

@@ -11,11 +11,6 @@
     <div class="card">
         <div class="card-header">
             <a href=" {{ route('adminProduct.create') }} " class="btn btn-success" >Tạo mới</a>
-            <div class="card-tools">
-                <ul class="pagination pagination-sm m-0 float-right">
-                    {{ $products->links() }}
-                </ul>
-            </div>
         </div>
         <table class="table table-bordered">
             <thead>
@@ -46,13 +41,15 @@
                 <th style="width: 11%">Mô tả</th>
                 <th style="width: 12%">Giá bán</th>
                 <th style="width: 10%">Trạng thái</th>
-                <th style="width: 8%">Nổi bật</th>
                 <th style="width: 12%">Thao tác</th>
             </tr>
             </thead>
             <tbody>
             @foreach ($products as $product)
             <tr>
+            @php
+                $imagearray = json_decode(\App\Models\Product::findOrFail($product->id)->image,true);
+            @endphp
                 <td>{{ $loop->index+1 }}</td>
                 <td>{{ $product->name }}</td>
                 @if ($product->category_id === null)
@@ -60,15 +57,16 @@
                 @else
                 <td>{{ $product->category->name }}</td>
                 @endif
-                <td><img src="/uploads/imagesProduct/{{ $product->thumbnail }}" height="100"></td>
+               @foreach ((array)$imagearray as $image )
+               @if ($loop->index==1)
+                        @break
+                    @endif
+                  <td> <img src="/uploads/imagesProduct/{{ $image }}" alt="" height="60"></td>                 
+               @endforeach                 
+               
                 <td>{{ $product->short_desc }}</td>
                 <td>{{ $product->price }}</td>
                 <td>{{ $product->status_product->name }}</td>
-                @if ($product->star)
-                <td>Có</td>
-                @else
-                <td>Không</td>
-                @endif
                 <td >
                     <a href="{{ route('adminProduct.edit', $product->id) }}" class="btn btn-warning btn-sm" >Sửa</a>                    
                     <form action="{{ route('adminProduct.destroy', $product->id) }}" method="POST" style="display: inline;">

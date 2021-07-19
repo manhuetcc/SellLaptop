@@ -3,19 +3,12 @@
 @section('title', 'Quản lý đơn hàng')
 
 @section('content_header')
-    <h1>Đơn hàng đã hoàn thành</h1>
+    <h1>Đơn hàng đã được giao</h1>
 @stop
 
 @section('content')
     <!-- Nội dung chính của trang quản trị -->
     <div class="card">
-        <div class="card-header">
-            <div class="card-tools">
-                <ul class="pagination pagination-sm m-0 float-right">
-                    {{ $listCompletedOrder->links() }}
-                </ul>
-            </div>
-        </div>
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -41,10 +34,10 @@
                   <p>Đơn giá: {{ $order->sale_price }}</p>
                   <p>SĐT: {{ $order->phone_order }}</p>
                   <p>Địa chỉ nhận hàng: {{ $order->address_order }}</p>
-                  <p>Thời điểm hoàn thành: {{ $order->completed_date }}</p>
+                  <p>Thời điểm bắt đầu giao hàng: {{ $order->shipped_date }}</p>
                 </td>
                 <td >
-                    <a href="{{ route('detailOrder', $order->id) }}" class="btn btn-warning btn-sm" >Chi tiết</a>                   
+                    <a href="#" class="btn btn-warning btn-sm" >Chi tiết</a>                   
                 </td>
             </tr>
             @endforeach

@@ -23,12 +23,8 @@
           <input type="text" name="name" class="form-control form-control-border" id="categoryName" value="{{ $category->name }}">
         </div>
         <div class="form-group">
-          <label for="shortDesc">Mô tả ngắn</label>
-          <input type="text" name="short_desc" class="form-control form-control-border" id="shortDesc" value="{{ $category->short_desc }}">
-        </div>
-        <div class="form-group">
-          <label for="fullDesc">Mô tả chi tiết</label>
-          <textarea class="form-control" name="full_desc" id="fullDesc" rows="5">{{ $category->full_desc }}</textarea>
+          <label for="Desc">Mô tả</label>
+          <input type="text" name="desc" class="form-control" id="Desc" value="{{ $category->desc }}">
         </div>
         <div>          
           <button type="submit" class="btn btn-success float-right" onclick="confirmEdit()">Hoàn thành</button>

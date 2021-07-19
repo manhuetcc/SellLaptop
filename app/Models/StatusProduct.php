@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class StatusProduct extends Model
 {
-    public function product()
+    public function products()
     {
-        return $this->hasMany('App\Models\Product','product_id');
+        return $this->hasMany('App\Models\Product', 'product_id');
     }
 }

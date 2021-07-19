@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,27 @@ class UserController extends Controller
     {
         $id = Auth::id();
         $profile = DB::table('users')
-            ->select('name', 'email', 'created_at')
+            ->select('id', 'name', 'email', 'created_at', 'avatar')
+            ->where('id', $id)
+            ->get();
+        return $profile;
+    }
+
+    public function updateDetail(Request $request)
+    {
+        User::findOrFail($request->id)
+            ->update(
+                [
+                    'name' => $request->name,
+                ]
+            );
+        return;
+    }
+    public function avatar()
+    {
+        $id = Auth::id();
+        $profile = DB::table('users')
+            ->select('avatar')
             ->where('id', $id)
             ->get();
         return $profile;
@@ -28,6 +49,15 @@ class UserController extends Controller
             $file->move(public_path() . '/uploads/avatar/', $filename);
         }
         $user_id = Auth::id();
+        //lay duong dan file cu
+        $oldfile = DB::table('users')
+            ->select('avatar')
+            ->where('id', $user_id)
+            ->get();
+
+        //delete file cu 
+        Storage::delete(public_path() . '/uploads/avatar/', $oldfile);
+        //update lai duong dan file moi
         User::findOrFail($user_id)
             ->update([
                 'avatar' => $filename,
