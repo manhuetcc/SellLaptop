@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class UserController extends Controller
     {
         $id = Auth::id();
         $profile = DB::table('users')
-            ->select('id', 'name', 'email', 'created_at', 'avatar')
+            ->select('id', 'role_id', 'name', 'email', 'created_at', 'avatar')
             ->where('id', $id)
             ->get();
         return $profile;
@@ -43,20 +44,24 @@ class UserController extends Controller
     }
     public function updateAvatar(Request $request)
     {
+        $user_id = Auth::id();
+        $oldfile = DB::table('users')->where('id', $user_id)->first();
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $filename = $request->file->getClientOriginalName();
-            $file->move(public_path() . '/uploads/avatar/', $filename);
+            if ($oldfile == null) {
+                File::makeDirectory(public_path() . '/uploads/avatar/' . $user_id);
+            }
+            $file->move(public_path() . '/uploads/avatar/' . $user_id, $filename);
         }
-        $user_id = Auth::id();
         //lay duong dan file cu
-        $oldfile = DB::table('users')
-            ->select('avatar')
-            ->where('id', $user_id)
-            ->get();
 
+        //echo "$oldfile";
         //delete file cu 
-        Storage::delete(public_path() . '/uploads/avatar/', $oldfile);
+        $print = $oldfile->avatar;
+        if (File::exists(public_path() . '/uploads/avatar/' . $user_id . '/' . $print)) {
+            File::delete(public_path() . '/uploads/avatar/' . $user_id . '/' . $print);
+        }
         //update lai duong dan file moi
         User::findOrFail($user_id)
             ->update([

@@ -243,7 +243,6 @@ button:focus {
 }
 
 span {
-    border: 2px solid red;
     margin-left: 10px;
     width: 45px;
     height: 40px;

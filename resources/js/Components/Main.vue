@@ -30,11 +30,12 @@
               <router-link to="/listorder" v-if="isuser == true"><img src="/../images/cart.png" width="30px" height="30px"></router-link>
               <div class="account">
                   <img v-if="isuser == true && user[0].avatar == null" class="avatar" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1CfdSF5Sdj53VRzQtJe8dgcoDLSyH5tK_sGgyhlfs91uiPe4FAg0u_nsBPDIGovorvso&usqp=CAU" width="30px" height="30px" @click="show_profile = !show_profile">
-                        <img v-if="isuser == true && user[0].avatar != null" class="avatar" :src="'/uploads/avatar/' + user[0].avatar" width="30px" height="30px" @click="show_profile = !show_profile">
+                  <img v-if="isuser == true && user[0].avatar != null" class="avatar" :src="'/uploads/avatar/' + user[0].id+'/'+user[0].avatar" width="30px" height="30px" @click="show_profile = !show_profile">
                   <div class="dropdown-menu" v-show="show_profile == true">
                        <p v-if="user[0] != null"><b>{{ user[0].name }}</b></p>
                       <hr>
                       <router-link to="/profile">Hồ sơ</router-link>
+                      <a v-if="isAdmin==2" href="/admin">Trang quản lý</a>
                       <a href="#" @click="logout()">Đăng xuất</a>
                   </div>
               </div>
@@ -44,17 +45,26 @@
         <div>
         </div>
           <router-view></router-view>
-          <button class="open-button" @click="dialogChat=!dialogChat">Chat</button>
-          <div class="chat-popup" >
-            <form action="" class="form-container" v-if="dialogChat">
-              <h1>Chat</h1>
-
-              <label for="msg"><b>Message</b></label>
-              <textarea placeholder="Type message.." name="msg" required></textarea>
-
-              <button type="submit" class="btn">Send</button>
-              <button type="button" class="btn cancel" @click="dialogChat=false">Close</button>
-            </form>
+          <button class="open-button" v-if="!dialogChat" @click="dialogChat=true"><img src="https://play-lh.googleusercontent.com/ldcQMpP7OaVmglCF6kGas9cY_K0PsJzSSosx2saw9KF1m3RHaEXpH_9mwBWaYnkmctk" height="40px"></button>
+          <div class="chatbox" v-if="dialogChat">
+            <div class="item1"></div>
+            <div class="item2"><button type="button" class="btn-close btn-close-white" aria-label="Close" @click="dialogChat=false">&#10006</button></div>
+            <div class="chat-box-list-container" ref="chatbox">
+              <ul class="chat-box">
+                <li v-for="(message, index) in messages" :key="index" :class="message.author">
+                  <p>
+                    {{ message.text }}
+                  </p>
+                </li>
+              </ul>
+            </div>
+            <div class="inputmsg">
+              <textarea  placeholder="type message" v-model="message" @keyup.enter="sendMessage" >
+              </textarea>
+              <button>
+                <img src="https://img1.pnghut.com/17/6/22/AfzgpxrSsa/blog-font-awesome-symbol-brand-logo.jpg" @click="sendMessage" height="27px" width="30px">
+              </button>
+            </div>
           </div>
         <div class="footer">
           <div class="container">
@@ -82,6 +92,9 @@ import Search from './Search.vue'
                 isuser: false,
                 show_profile: false,
                 dialogChat: false,
+                messages:[],
+                message:'',
+                isAdmin:1,
             }
         },
 
@@ -89,6 +102,7 @@ import Search from './Search.vue'
           axios.get('/api/profile')
               .then(response => {
                   this.user = response.data;
+                  this.isAdmin = response.data[0].role_id;
                    //console.log(this.user);
                    //console.log(this.user.length);
               })
@@ -125,7 +139,45 @@ import Search from './Search.vue'
             //event.preventDefault();
             this.$router.push('/category/' + id).catch(()=>{});;
           },
+          sendMessage() {
+            const message = this.message
+            this.messages.push({
+              text: message,
+              author: 'client'
+            })
+            this.message='';
+            if(message=="alo\n")
+            {
+              this.messages.push(
+                {
+                  text:'what the hell?.',
+                  author:'server'
+                }
+              )
+            }
+            if(message=="help\n")
+            {
+              this.messages.push(
+                {
+                  text:'What do you need?.',
+                  author:'server'
+                }
+              )
+            }
+            if(message=="an\n")
+            {
+              this.messages.push(
+                {
+                  text:'anlab?.',
+                  author:'server'
+                }
+              )
+            }
+          this.$nextTick(() => {
+          this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
+          })
     },
+  },
     watch:{
             user() {
                 if(this.user.length > 0) {

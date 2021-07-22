@@ -21,7 +21,7 @@
 	<div class="small-container userprofile-page">
 		<div class="row">
 			<div class="col2">
-				<img class="mainavatar" :src="'/../uploads/avatar/'+user[0].avatar" width="230px" height="200px" @click="editAvatar = 'True'">
+				<img class="mainavatar" :src="'/../uploads/avatar/'+this.user[0].id+'/'+this.user[0].avatar" width="230px" height="200px" @click="editAvatar = 'True'">
 				<br>
 				<h4>Ảnh đại diện</h4>
 				<input type="file" id="file" name="file" ref="file" @change="handleFileUpload()" v-if="editAvatar">

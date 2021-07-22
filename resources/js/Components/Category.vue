@@ -3,7 +3,7 @@
     <h2>Danh mục sản phẩm: {{ category.name }} ({{ products.from }}-{{ products.to }} trong số {{ products.total }})</h2>
     <div class="row">
 			<div class="col-4" v-for="(product, index) in products.data" :key="index" @click="goToProduct(product.id)">
-				<img :src="'/uploads/imagesProduct/' + product.image">
+				<img :src="'/uploads/imagesProduct/' + product.thumbnail">
 				<h4>{{ product.name }}</h4>
 				<p><b>{{ formatPrice(product.price) }}</b></p>
 			</div>

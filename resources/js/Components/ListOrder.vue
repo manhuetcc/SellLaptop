@@ -22,11 +22,12 @@
               <router-link to="/listorder" v-if="isuser == true"><img src="/../images/cart.png" width="30px" height="30px"></router-link>
               <div class="account">
                   <img v-if="isuser == true && user[0].avatar == null" class="avatar" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1CfdSF5Sdj53VRzQtJe8dgcoDLSyH5tK_sGgyhlfs91uiPe4FAg0u_nsBPDIGovorvso&usqp=CAU" width="30px" height="30px" @click="show_profile = !show_profile">
-                        <img v-if="isuser == true && user[0].avatar != null" class="avatar" :src="'/uploads/avatar/' + user[0].avatar" width="30px" height="30px" @click="show_profile = !show_profile">
+                        <img v-if="isuser == true && user[0].avatar != null" class="avatar" :src="'/uploads/avatar/' + user[0].id+'/'+user[0].avatar" width="30px" height="30px" @click="show_profile = !show_profile">
                   <div class="dropdown-menu" v-show="show_profile == true">
                        <p v-if="user[0] != null"><b>{{ user[0].name }}</b></p>
                       <hr>
                       <router-link to="/profile">Hồ sơ</router-link>
+                      <a v-if="isAdmin==2" href="/admin">Trang quản lý</a>
                       <a href="#" @click="logout()">Đăng xuất</a>
                   </div>
               </div>
@@ -90,6 +91,7 @@ export default {
         axios.get('/api/profile')
               .then(response => {
                   this.user = response.data;
+                  this.isAdmin = response.data[0].role_id;
                    //console.log(this.user);
                    //console.log(this.user.length);
               })
@@ -116,6 +118,7 @@ export default {
             isuser: false,
             show_profile: false,
             amount:0,
+            isAdmin:1,
         }
     },
     
