@@ -1,0 +1,170 @@
+<template>
+<div class="main-section">
+    <div class="head-section">
+    <div class="headLeft-section">
+        <div class="headLeft-sub">
+            <input type="text" name="search" placeholder="Search...">
+            <button> <i class="fa fa-search"></i> </button>
+        </div>
+    </div>
+    <div class="headRight-section">
+        <div class="headRight-sub">
+            <h3>Lajy Ion</h3>
+            <small>Lorem ipsum dolor sit amet...</small>
+        </div>
+    </div>
+</div>
+<div class="body-section">
+<div class="left-section mCustomScrollbar" data-mcs-theme="minimal-dark">
+<ul>
+    <li>
+        <div class="chatList">
+            <div class="img">
+                <i class="fa fa-circle"></i>
+                <img src="/demo/man01.png"><br>
+            </div>
+            <div v-for="(listmsg, index) in listMessage[0]" :key="index" @click="currentChannel=listmsg.channel" class="desc">
+                 <small class="time">05:30 am</small> 
+                <h5>{{listmsg.channel}}</h5>
+                  <small>Message</small>
+            </div>
+        </div>
+    </li>
+    <!--<li class="active">
+        <div class="chatList">
+            <div class="img">
+                <img src="/demo/man03.png">
+            </div>
+            <div class="desc">
+                <small class="time">4 day</small>
+                    <h5>Lajy Ion</h5>
+                <small>Lorem ipsum dolor sit amet...</small>
+            </div>
+        </div>
+    </li>!-->
+
+</ul>
+</div>
+<div class="right-section">
+<div class="message mCustomScrollbar" data-mcs-theme="minimal-dark">
+<ul v-for="(message,index) in messages" :key="index" >
+
+    <li v-if="user[0].id == message.sender" class="msg-left">
+        <div class="msg-left-sub">
+            <img src="/demo/man03.png">
+                <div class="msg-desc">
+                    {{message.content}}
+                </div>
+            <small>05:25 am</small>
+        </div>
+    </li>
+    <li v-else class="msg-right">
+        <div class="msg-left-sub">
+            <img src="/demo/man04.png">
+                <div class="msg-desc">
+                    {{message.content}} 
+                </div>
+            <small>05:25 am</small>
+        </div>
+    </li>
+
+</ul>
+
+</div>
+    <div class="right-section-bottom">
+        <form>
+            <div class="upload-btn">
+                <button class="btn"><i class="fa fa-photo"></i></button>
+            </div>
+            <div class="inputMsg">
+                <input  v-model="inputMessage" type="text" name="" placeholder="type here...">
+                <button class="btn-send" @click="saveMessage($event,inputMessage)"> Sent</button>
+            </div>
+        </form>
+    </div>
+    </div>
+    </div>
+</div>
+</div>
+</template>
+<script>
+import $ from 'jquery'
+export default {
+    data() {
+        return {
+            user:[],
+            messages:{},
+            currentChannel:0,
+            listMessage:[],
+            inputMessage:'',
+        }
+    },
+    created () {
+        this.getUser();
+        this.getList();
+        // this.currentChannel = this.$route.params.channel
+        // if(this.$route.params.channel!=null){
+        // Echo.private(`room.${this.currentChannel}`)
+        // .listen('MessagePosted', (e) => {
+        //   this.messages.push(e.message) 
+        // })   
+    // }
+    },
+    beforeDestroy () {
+    // huỷ lắng nghe tin nhắn ở chatroom hiện tại
+    // nếu như user chuyển qua route/chatroom khác
+    Echo.leave(`channel.${this.currentChannel}`)
+},
+  methods: {
+      //get tin nhan
+      async getMessages(){
+        try {
+        const response = await axios.get(`/api/messages/${this.currentChannel}`)
+        this.messages = response.data
+        //this.scrollToBottom(document.getElementById('shared_room'), false)
+      } catch (error) {
+        console.log(error)
+      }
+      },
+      //luu tin nhan
+      async saveMessage (event,content) {
+        event.preventDefault();
+      try {
+        const response = await axios.post('/api/messages', {
+          channel: this.currentChannel,
+          content
+        })
+        this.messages.push(response.data.message)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async getList(){
+        try {
+        const response = await axios.get(`/api/listmessages`)
+        this.listMessage = response.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async getUser(){
+        try {
+        const response = await axios.get(`/api/profile`)
+        this.user = response.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
+  },
+  watch:{
+      currentChannel(){
+        this.getMessages();
+          Echo.private(`channel.${this.currentChannel}`)
+        .listen('MessagePosted', (e) => {
+          this.messages.push(e.message) 
+        })  
+      }
+  }
+}
+</script>
+<style src="../css/css_message.css" scoped>

@@ -50,6 +50,11 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Models\Order');
     }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
     public function comments()
     {
         return $this->hasMany('App\Models\Comment');

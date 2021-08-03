@@ -50,3 +50,12 @@ Route::post('/profile/avatar', [App\Http\Controllers\API\UserController::class, 
 Route::get('/product/comments/{id}', [App\Http\Controllers\API\ProductController::class, 'comment']);
 //post comment
 Route::post('/comment', [App\Http\Controllers\API\ProductController::class, 'postcomment'])->middleware('user');
+
+//api get message by channel
+Route::get('/messages', [App\Http\Controllers\API\MessageController::class, 'index']);
+//api get by channel
+Route::get('/messages/{id}', [App\Http\Controllers\API\MessageController::class, 'getMessage']);
+//api
+Route::post('/messages', [App\Http\Controllers\API\MessageController::class, 'store']);
+//qpi get list message
+Route::get('/listmessages', [App\Http\Controllers\API\MessageController::class, 'listMessage'])->middleware('admin');

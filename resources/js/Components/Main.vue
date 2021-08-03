@@ -45,24 +45,29 @@
         <div>
         </div>
           <router-view></router-view>
-          <button class="open-button" v-if="!dialogChat" @click="dialogChat=true"><img src="https://play-lh.googleusercontent.com/ldcQMpP7OaVmglCF6kGas9cY_K0PsJzSSosx2saw9KF1m3RHaEXpH_9mwBWaYnkmctk" height="40px"></button>
+          <button class="open-button" v-if="!dialogChat" @click="openDialog()"><img src="https://play-lh.googleusercontent.com/ldcQMpP7OaVmglCF6kGas9cY_K0PsJzSSosx2saw9KF1m3RHaEXpH_9mwBWaYnkmctk" height="40px"></button>
           <div class="chatbox" v-if="dialogChat">
             <div class="item1"></div>
             <div class="item2"><button type="button" class="btn-close btn-close-white" aria-label="Close" @click="dialogChat=false">&#10006</button></div>
             <div class="chat-box-list-container" ref="chatbox">
-              <ul class="chat-box">
-                <li v-for="(message, index) in messages" :key="index" :class="message.author">
+              <ul class="chat-box" v-for="(message, index) in messages" :key="index">
+                <li v-if="user[0].id == message.sender" class="client">
                   <p>
-                    {{ message.text }}
+                    {{ message.content }}
+                  </p>
+                </li>
+                <li v-else class="server">
+                  <p>
+                    {{ message.content }}
                   </p>
                 </li>
               </ul>
             </div>
             <div class="inputmsg">
-              <textarea  placeholder="type message" v-model="message" @keyup.enter="sendMessage" >
+              <textarea  placeholder="type message" v-model="message" @keyup.enter="saveMessage($event,message)" >
               </textarea>
               <button>
-                <img src="https://img1.pnghut.com/17/6/22/AfzgpxrSsa/blog-font-awesome-symbol-brand-logo.jpg" @click="sendMessage" height="27px" width="30px">
+                <img src="https://img1.pnghut.com/17/6/22/AfzgpxrSsa/blog-font-awesome-symbol-brand-logo.jpg" @click="saveMessage($event,message)" height="27px" width="30px">
               </button>
             </div>
           </div>
@@ -84,6 +89,10 @@
 import Index from './Index.vue'
 import Search from './Search.vue'
     export default {
+      created() {
+        this.getUser();
+        this.getMessages();
+      },
         data() {
             return {
                 user: [],
@@ -95,20 +104,30 @@ import Search from './Search.vue'
                 messages:[],
                 message:'',
                 isAdmin:1,
+                currentChannel:0
             }
         },
 
         mounted() {
-          axios.get('/api/profile')
-              .then(response => {
-                  this.user = response.data;
-                  this.isAdmin = response.data[0].role_id;
-                   //console.log(this.user);
-                   //console.log(this.user.length);
-              })
-              .catch(function(){
-                console.log('Loi tai user');
-              });
+          //get message
+          // axios.get('/api/messages')
+          //     .then(response => {
+          //         this.messages = response.data
+          //     })
+          //     .catch(function(err){
+          //       console.log(err);
+          //     });
+              //get user
+          // axios.get('/api/profile')
+          //     .then(response => {
+          //         this.user = response.data;
+          //         this.isAdmin = response.data[0].role_id;
+          //          //console.log(this.user);
+          //          //console.log(this.user.length);
+          //     })
+          //     .catch(function(){
+          //       console.log('Loi tai user');
+          //     }); 
           axios.get('/api/category')
               .then(response => {
                   this.categories= response.data;
@@ -120,6 +139,34 @@ import Search from './Search.vue'
         },
 
         methods: {
+          openDialog(){
+            this.dialogChat = true;
+            Echo.private(`channel.${this.currentChannel}`)
+            .listen('MessagePosted', (e) => {
+              this.messages.push(e.message) 
+          })
+          },
+          //getmessage
+          async getMessages(){
+          try {
+          const response = await axios.get('/api/messages')
+          this.messages = response.data
+        } catch (error) {
+          console.log(error)
+        }
+        },
+        //getuser
+        async getUser(){
+        try {
+        const response = await axios.get(`/api/profile`)
+        this.user = response.data;
+        this.isAdmin = response.data[0].role_id;
+        this.currentChannel = response.data[0].id;
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    /////////////////
           search(event) {
             event.preventDefault();
             if (this.keyword == '') {
@@ -139,44 +186,59 @@ import Search from './Search.vue'
             //event.preventDefault();
             this.$router.push('/category/' + id).catch(()=>{});;
           },
-          sendMessage() {
-            const message = this.message
-            this.messages.push({
-              text: message,
-              author: 'client'
+          saveMessage(event,content){
+            event.preventDefault();
+            axios.post('/api/messages', {
+              channel: this.user[0].id,
+              content
             })
-            this.message='';
-            if(message=="alo\n")
-            {
-              this.messages.push(
-                {
-                  text:'what the hell?.',
-                  author:'server'
-                }
-              )
-            }
-            if(message=="help\n")
-            {
-              this.messages.push(
-                {
-                  text:'What do you need?.',
-                  author:'server'
-                }
-              )
-            }
-            if(message=="an\n")
-            {
-              this.messages.push(
-                {
-                  text:'anlab?.',
-                  author:'server'
-                }
-              )
-            }
-          this.$nextTick(() => {
-          this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
-          })
-    },
+              .then(response => {
+                  this.messages.push(response.data.message);
+                  console.log(response.data);
+                  this.message='';
+              })
+              .catch(function(err){
+                console.log(err);
+              });
+          }
+    //       sendMessage() {
+    //         const message = this.message
+    //         this.messages.push({
+    //           text: message,
+    //           author: 'client'
+    //         })
+    //         this.message='';
+    //         if(message=="alo\n")
+    //         {
+    //           this.messages.push(
+    //             {
+    //               text:'what the hell?.',
+    //               author:'server'
+    //             }
+    //           )
+    //         }
+    //         if(message=="help\n")
+    //         {
+    //           this.messages.push(
+    //             {
+    //               text:'What do you need?.',
+    //               author:'server'
+    //             }
+    //           )
+    //         }
+    //         if(message=="an\n")
+    //         {
+    //           this.messages.push(
+    //             {
+    //               text:'anlab?.',
+    //               author:'server'
+    //             }
+    //           )
+    //         }
+    //       this.$nextTick(() => {
+    //       this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
+    //       })
+    // },
   },
     watch:{
             user() {

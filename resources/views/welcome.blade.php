@@ -18,7 +18,9 @@
     <div id="app">
         <router-view csrf="{{csrf_token()}}"></router-view>
     </div>
-    <script src="{{ url('js/app.js') }}"></script> 
+    <script src="http://localhost:6001/socket.io/socket.io.js"></script>
+    <script src="{{ url('js/app.js') }}"></script>
+    {{-- <script src="{{ mix('js/vendor.js') }}"></script> --}}
 </html>
 
 

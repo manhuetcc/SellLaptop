@@ -30,6 +30,7 @@ import ProductDetails from './Components/ProductDetails.vue'
 import OrderDetail from './Components/OrderDetail.vue'
 import ListOrder from './Components/ListOrder.vue'
 import Category from './Components/Category.vue'
+import Message from './Components/AdminMessage.vue'
 Vue.use(VueRouter);
 window.axios = require('axios');
 const router = new VueRouter({
@@ -70,6 +71,12 @@ const router = new VueRouter({
                     path: '/category/:id',
                     name: 'Category',
                     component: Category,
+                    props: true
+                },
+                {
+                    path: '/message',
+                    name: 'Message',
+                    component: Message,
                     props: true
                 },
             ]

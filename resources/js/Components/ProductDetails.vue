@@ -124,7 +124,7 @@ export default {
     postcomment(event, content)
     {
         this.tempComment = content;
-        event.preventDefault();
+        //event.preventDefault();
         if(content == null || content =='') {alert('Xin nhập nội dung');}
         else{
         this.comment.user_id = this.user[0].id;
