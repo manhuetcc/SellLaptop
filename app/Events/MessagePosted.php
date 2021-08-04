@@ -22,6 +22,7 @@ class MessagePosted implements ShouldBroadcast
      */
     public function __construct(Message $message)
     {
+        // dd($message);
         $this->message = $message;
     }
 
@@ -32,6 +33,6 @@ class MessagePosted implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel' . $this->message->channel);
+        return new PrivateChannel('channel.' . $this->message->channel);
     }
 }

@@ -137,8 +137,9 @@ body {
 }
 
 .left-section .chatList .img img {
-    width: 30px;
+    width: 33px;
     border-radius: 50%;
+    height: 30px;
 }
 
 .left-section .chatList .img i {
@@ -207,11 +208,12 @@ body {
 
 .message ul li.msg-left .msg-desc {
     margin-left: 70px;
-    font-size: 12px;
+    font-size: 15px;
     background: #E8E8E8;
     padding: 5px 10px;
     border-radius: 5px 5px 5px 0px;
     position: relative;
+    float: left;
 }
 
 .message ul li.msg-left .msg-desc:before {
@@ -241,12 +243,13 @@ body {
 
 .message ul li.msg-right .msg-desc {
     margin-right: 70px;
-    font-size: 12px;
+    font-size: 15px;
     background: #cce5ff;
     color: #004085;
     padding: 5px 10px;
     border-radius: 5px 5px 5px 0px;
     position: relative;
+    float: right;
 }
 
 .message ul li.msg-right .msg-desc:before {
@@ -333,7 +336,7 @@ body {
 }
 
 /* cuon thanh chat */
-div.right-section {
+.message.mCustomScrollbar {
     overflow: scroll;
     overflow-x: hidden;
 }

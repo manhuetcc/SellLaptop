@@ -69,4 +69,10 @@ class UserController extends Controller
             ]);
         return $filename;
     }
+
+    public function listUser()
+    {
+        $user = User::select('id', 'name', 'avatar')->get();
+        return $user;
+    }
 }

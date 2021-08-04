@@ -18,14 +18,14 @@
 <div class="left-section mCustomScrollbar" data-mcs-theme="minimal-dark">
 <ul>
     <li>
-        <div class="chatList">
+        <div class="chatList" v-for="(listmsg, index) in listMessage[0]" :key="index" @click="currentChannel=listmsg.channel ">
             <div class="img">
                 <i class="fa fa-circle"></i>
-                <img src="/demo/man01.png"><br>
+                <img :src="'/uploads/avatar/' + listUser[listmsg.channel-1].id+'/'+listUser[listmsg.channel-1].avatar">
             </div>
-            <div v-for="(listmsg, index) in listMessage[0]" :key="index" @click="currentChannel=listmsg.channel" class="desc">
+            <div  class="desc">
                  <small class="time">05:30 am</small> 
-                <h5>{{listmsg.channel}}</h5>
+                <h5>{{listUser[listmsg.channel-1].name}}</h5>
                   <small>Message</small>
             </div>
         </div>
@@ -45,26 +45,26 @@
 
 </ul>
 </div>
-<div class="right-section">
-<div class="message mCustomScrollbar" data-mcs-theme="minimal-dark">
+<div class="right-section" >
+<div class="message mCustomScrollbar" data-mcs-theme="minimal-dark" ref="chatbox">
 <ul v-for="(message,index) in messages" :key="index" >
 
-    <li v-if="user[0].id == message.sender" class="msg-left">
+    <li v-if="user[0].id != message.sender" class="msg-left">
         <div class="msg-left-sub">
-            <img src="/demo/man03.png">
+            <img :src="'/uploads/avatar/' + user[0].id+'/'+user[0].avatar">
                 <div class="msg-desc">
                     {{message.content}}
                 </div>
-            <small>05:25 am</small>
+            <small>{{message.created_at}}</small>
         </div>
     </li>
     <li v-else class="msg-right">
         <div class="msg-left-sub">
-            <img src="/demo/man04.png">
+            <img :src="'/uploads/avatar/' + listUser[currentChannel-1].id+'/'+listUser[currentChannel-1].avatar">
                 <div class="msg-desc">
-                    {{message.content}} 
+                    {{message.content}}
                 </div>
-            <small>05:25 am</small>
+            <small>{{message.created_at}}</small>
         </div>
     </li>
 
@@ -77,7 +77,7 @@
                 <button class="btn"><i class="fa fa-photo"></i></button>
             </div>
             <div class="inputMsg">
-                <input  v-model="inputMessage" type="text" name="" placeholder="type here...">
+                <input  v-model="inputMessage" type="text" name="" placeholder="type here..."@keyup.enter="saveMessage($event,inputMessage)">
                 <button class="btn-send" @click="saveMessage($event,inputMessage)"> Sent</button>
             </div>
         </form>
@@ -97,11 +97,14 @@ export default {
             currentChannel:0,
             listMessage:[],
             inputMessage:'',
+            showChat:false,
+            listUser:[],
         }
     },
     created () {
         this.getUser();
         this.getList();
+        this.getListUser();
         // this.currentChannel = this.$route.params.channel
         // if(this.$route.params.channel!=null){
         // Echo.private(`room.${this.currentChannel}`)
@@ -129,12 +132,16 @@ export default {
       //luu tin nhan
       async saveMessage (event,content) {
         event.preventDefault();
+        this.inputMessage=''
       try {
         const response = await axios.post('/api/messages', {
           channel: this.currentChannel,
           content
         })
         this.messages.push(response.data.message)
+        this.$nextTick(() => {
+        this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
+        })
       } catch (error) {
         console.log(error)
       }
@@ -155,6 +162,14 @@ export default {
         console.log(error)
       }
     },
+    async getListUser(){
+        try {
+        const response = await axios.get(`/api/listuser`)
+        this.listUser = response.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
   },
   watch:{
       currentChannel(){
@@ -162,7 +177,10 @@ export default {
           Echo.private(`channel.${this.currentChannel}`)
         .listen('MessagePosted', (e) => {
           this.messages.push(e.message) 
-        })  
+        })
+        this.$nextTick(() => {
+        this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
+        })
       }
   }
 }

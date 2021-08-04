@@ -39,7 +39,7 @@ class MessageController extends Controller
         $message->save();
         broadcast(new MessagePosted($message))->toOthers();
         //echo $message->channel;
-        return response()->json(['message' => $message->load('sender')]);
+        return response()->json(['message' => $message]);
     }
 
     //lay danh sach nguoi gui

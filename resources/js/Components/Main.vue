@@ -10,6 +10,7 @@
                 <ul>
                   <li><router-link to="/index">Trang chủ</router-link></li>
                   <li><router-link to="/products">Sản phẩm</router-link></li>
+                  <li v-if="isAdmin==2"><router-link to="/message">Tin Nhắn</router-link></li>
                   <li>
                     <div class="dropdown">
                       <button class="dropbtn">Hãng</button>
@@ -140,11 +141,15 @@ import Search from './Search.vue'
 
         methods: {
           openDialog(){
+            if(this.isAdmin!=2){
             this.dialogChat = true;
+            this.$nextTick(() => {
+                  this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
+                  })
             Echo.private(`channel.${this.currentChannel}`)
             .listen('MessagePosted', (e) => {
               this.messages.push(e.message) 
-          })
+          })}
           },
           //getmessage
           async getMessages(){
@@ -194,6 +199,9 @@ import Search from './Search.vue'
             })
               .then(response => {
                   this.messages.push(response.data.message);
+                  this.$nextTick(() => {
+                  this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
+                  })
                   console.log(response.data);
                   this.message='';
               })

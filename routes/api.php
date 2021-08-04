@@ -21,6 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 //api ve thong tin cua nguoi su dung
 Route::get('/profile', [App\Http\Controllers\API\UserController::class, 'show'])->name('apiProfile')->middleware('user');
+Route::get('/listuser', [App\Http\Controllers\API\UserController::class, 'listUser'])->middleware('admin');
 //update thong tin nguoi dung
 Route::put('/profile', [App\Http\Controllers\API\UserController::class, 'updateDetail'])->middleware('user');
 
