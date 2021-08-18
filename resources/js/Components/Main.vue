@@ -15,7 +15,7 @@
                     <div class="dropdown">
                       <button class="dropbtn">Hãng</button>
                       <div class="dropdown-content">
-                        <a v-for="(category, index) in categories" :key="index" :value="category.id" @click="direct($event,category.id)">{{ category.name }}</a>
+                        <a v-for="(category, index) in categories" :key="index" :value="category.id" @click="directCategory($event,category.id)">{{ category.name }}</a>
                       </div>
                     </div>
                   </li>
@@ -53,19 +53,15 @@
             <div class="chat-box-list-container" ref="chatbox">
               <ul class="chat-box" v-for="(message, index) in messages" :key="index">
                 <li v-if="user[0].id == message.sender" class="client">
-                  <p>
                     {{ message.content }}
-                  </p>
                 </li>
                 <li v-else class="server">
-                  <p>
                     {{ message.content }}
-                  </p>
                 </li>
               </ul>
             </div>
             <div class="inputmsg">
-              <textarea  placeholder="type message" v-model="message" @keyup.enter="saveMessage($event,message)" >
+              <textarea  placeholder="type message" v-model="message" v-on:keydown.enter.prevent="saveMessage($event,message)" >
               </textarea>
               <button>
                 <img src="https://img1.pnghut.com/17/6/22/AfzgpxrSsa/blog-font-awesome-symbol-brand-logo.jpg" @click="saveMessage($event,message)" height="27px" width="30px">
@@ -93,6 +89,8 @@ import Search from './Search.vue'
       created() {
         this.getUser();
         this.getMessages();
+        this.getMessageRespond();
+        this.latestProduct();
       },
         data() {
             return {
@@ -105,7 +103,11 @@ import Search from './Search.vue'
                 messages:[],
                 message:'',
                 isAdmin:1,
-                currentChannel:0
+                currentChannel:0,
+                msgRespond:[],
+                latestPoduct:[],
+                countMsg:0,
+                //listUser:[],
             }
         },
 
@@ -148,7 +150,10 @@ import Search from './Search.vue'
                   })
             Echo.private(`channel.${this.currentChannel}`)
             .listen('MessagePosted', (e) => {
-              this.messages.push(e.message) 
+              this.messages.push(e.message)
+              this.$nextTick(() => {
+              this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
+        });
           })}
           },
           //getmessage
@@ -156,6 +161,15 @@ import Search from './Search.vue'
           try {
           const response = await axios.get('/api/messages')
           this.messages = response.data
+        } catch (error) {
+          console.log(error)
+        }
+        },
+        //get new product
+        async latestProduct(){
+          try {
+          const response = await axios.get('/api/newproduct')
+          this.latestPoduct = response.data
         } catch (error) {
           console.log(error)
         }
@@ -171,6 +185,59 @@ import Search from './Search.vue'
         console.log(error)
       }
     },
+    //
+    // async getListUser(){
+    //     try {
+    //     const response = await axios.get(`/api/listuser`)
+    //     this.listUser = response.data
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+    // },
+    //
+    async getMessageRespond(){
+        try {
+        const response = await axios.get(`/api/msgrespond`)
+        this.msgRespond = response.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    //phan hoi noi dung da fix trong chatbot
+    checkMessage(content){
+          axios.post('/api/messagerespond', {
+            channel: this.user[0].id,
+            content:content,
+            sender:1,
+          })
+            .then(response => {
+                this.messages.push(response.data.message);
+                this.countMsg++;
+                this.$nextTick(() => {
+                this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
+                })
+                console.log(response.data);
+                this.message='';
+            })
+            .catch(function(err){
+              console.log(err);
+            });
+        },
+
+          //smart bot
+          upgradeBot(content)
+          {
+            const str = content;
+            const words = str.split(' ');
+            if(words.includes('hi')) return "Chào "+this.user[0].name;
+            for(let j=0; j<this.categories.length;j++)
+              {
+                if(words.includes(this.categories[j].name)) return 'Đây là danh mục sản phẩm '+this.categories[j].name+' 127.0.0.1:8000/category/' + this.categories[j].id
+              }
+            if(str.includes("sản phẩm mới nhất")) return 'Đây là sản phẩm mới nhất ' + this.latestPoduct[0].name
+            if(this.countMsg >= 6) return "Tôi sẽ liên hệ tư vấn viên của shop để trả lời cho bạn"
+            return 0;
+          },
     /////////////////
           search(event) {
             event.preventDefault();
@@ -187,9 +254,9 @@ import Search from './Search.vue'
                        window.location.href = '/login';
                 });
         },
-          direct(event,id) {
+          directCategory(event,id) {
             //event.preventDefault();
-            this.$router.push('/category/' + id).catch(()=>{});;
+            this.$router.push('/category/' + id);
           },
           saveMessage(event,content){
             event.preventDefault();
@@ -202,51 +269,22 @@ import Search from './Search.vue'
                   this.$nextTick(() => {
                   this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
                   })
-                  console.log(response.data);
+              let index = this.msgRespond.findIndex(function(post, index) {
+                if(post.msg == content)
+                return true;
+                });
+              //phan hoi theo nhung cau co san trong bang chatbots
+              if(index != -1) this.checkMessage(this.msgRespond[index].respond);  
+              //neu co nhung cau trong ham upgradebot thi pha hoi  
+              if(this.upgradeBot(content)){
+                  this.checkMessage(this.upgradeBot(content));       
+              }
                   this.message='';
               })
               .catch(function(err){
                 console.log(err);
               });
           }
-    //       sendMessage() {
-    //         const message = this.message
-    //         this.messages.push({
-    //           text: message,
-    //           author: 'client'
-    //         })
-    //         this.message='';
-    //         if(message=="alo\n")
-    //         {
-    //           this.messages.push(
-    //             {
-    //               text:'what the hell?.',
-    //               author:'server'
-    //             }
-    //           )
-    //         }
-    //         if(message=="help\n")
-    //         {
-    //           this.messages.push(
-    //             {
-    //               text:'What do you need?.',
-    //               author:'server'
-    //             }
-    //           )
-    //         }
-    //         if(message=="an\n")
-    //         {
-    //           this.messages.push(
-    //             {
-    //               text:'anlab?.',
-    //               author:'server'
-    //             }
-    //           )
-    //         }
-    //       this.$nextTick(() => {
-    //       this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
-    //       })
-    // },
   },
     watch:{
             user() {

@@ -9,8 +9,8 @@
     </div>
     <div class="headRight-section">
         <div class="headRight-sub">
-            <h3>Lajy Ion</h3>
-            <small>Lorem ipsum dolor sit amet...</small>
+            <h3 v-if="currentChannel">{{listUser[currentChannel-1].name}}</h3>
+            <small></small>
         </div>
     </div>
 </div>
@@ -20,8 +20,7 @@
     <li>
         <div class="chatList" v-for="(listmsg, index) in listMessage[0]" :key="index" @click="currentChannel=listmsg.channel ">
             <div class="img">
-                <i class="fa fa-circle"></i>
-                <img :src="'/uploads/avatar/' + listUser[listmsg.channel-1].id+'/'+listUser[listmsg.channel-1].avatar">
+                <img :src="'/uploads/avatar/' + listmsg.sender+'/'+listUser[listmsg.sender-1].avatar">
             </div>
             <div  class="desc">
                  <small class="time">05:30 am</small> 
@@ -51,7 +50,7 @@
 
     <li v-if="user[0].id != message.sender" class="msg-left">
         <div class="msg-left-sub">
-            <img :src="'/uploads/avatar/' + user[0].id+'/'+user[0].avatar">
+            
                 <div class="msg-desc">
                     {{message.content}}
                 </div>
@@ -60,7 +59,7 @@
     </li>
     <li v-else class="msg-right">
         <div class="msg-left-sub">
-            <img :src="'/uploads/avatar/' + listUser[currentChannel-1].id+'/'+listUser[currentChannel-1].avatar">
+            <img :src="'/uploads/avatar/' + user[0].id+'/'+user[0].avatar">
                 <div class="msg-desc">
                     {{message.content}}
                 </div>
@@ -77,7 +76,7 @@
                 <button class="btn"><i class="fa fa-photo"></i></button>
             </div>
             <div class="inputMsg">
-                <input  v-model="inputMessage" type="text" name="" placeholder="type here..."@keyup.enter="saveMessage($event,inputMessage)">
+                <input  v-model="inputMessage" type="text" name="" placeholder="type here..." v-on:keydown.enter.prevent="saveMessage($event,inputMessage)">
                 <button class="btn-send" @click="saveMessage($event,inputMessage)"> Sent</button>
             </div>
         </form>
@@ -99,12 +98,14 @@ export default {
             inputMessage:'',
             showChat:false,
             listUser:[],
+            msgRespond:[],
         }
     },
     created () {
         this.getUser();
         this.getList();
         this.getListUser();
+        this.getMessageRespond();
         // this.currentChannel = this.$route.params.channel
         // if(this.$route.params.channel!=null){
         // Echo.private(`room.${this.currentChannel}`)
@@ -139,13 +140,31 @@ export default {
           content
         })
         this.messages.push(response.data.message)
+        // this.$nextTick(() => {
         this.$nextTick(() => {
-        this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
-        })
+          this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
+        });
+        // })
       } catch (error) {
         console.log(error)
       }
     },
+    //
+    async respondMessage (content) {
+      try {
+        const response = await axios.post('/api/messages', {
+          channel: this.currentChannel,
+          content
+        })
+        this.messages.push(response.data.message)
+        this.$nextTick(() => {
+          this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
+        });
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    //
     async getList(){
         try {
         const response = await axios.get(`/api/listmessages`)
@@ -154,6 +173,7 @@ export default {
         console.log(error)
       }
     },
+    //
     async getUser(){
         try {
         const response = await axios.get(`/api/profile`)
@@ -162,6 +182,7 @@ export default {
         console.log(error)
       }
     },
+    //
     async getListUser(){
         try {
         const response = await axios.get(`/api/listuser`)
@@ -170,17 +191,46 @@ export default {
         console.log(error)
       }
     },
+    //
+    async getMessageRespond(){
+        try {
+        const response = await axios.get(`/api/msgrespond`)
+        this.msgRespond = response.data
+        console.log(this.msgRespond)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    //
+    scrollToBottom (){
+      var messageDisplay = vueContent.$refs.chatbox;
+      messageDisplay.scrollTop = messageDisplay.scrollHeight;
+    },
+  //
+    
   },
   watch:{
       currentChannel(){
         this.getMessages();
-          Echo.private(`channel.${this.currentChannel}`)
+         Echo.private(`channel.${this.currentChannel}`)
         .listen('MessagePosted', (e) => {
-          this.messages.push(e.message) 
+          this.messages.push(e.message)
+          // const obj = this.msgRespond.find(o => o.msg == e.message.content);
+          // let index = this.msgRespond.findIndex(function(post, index) {
+          //   if(post.msg == e.message.content)
+          //     return true;
+          // });
+         // if(index != -1) this.respondMessage(this.msgRespond[index].respond);
+          // if(obj != null){
+          //   this.respondMessage(obj.respond);
+          // }
+
+          //this.messages.push(obj);
+          //this.getListUser();       
         })
         this.$nextTick(() => {
-        this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
-        })
+          this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
+        });
       }
   }
 }

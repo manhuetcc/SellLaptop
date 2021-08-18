@@ -48,7 +48,7 @@ export default {
                   console.log(err);
                 });
         },
-        methods: {
+      methods: {
           formatPrice(value){
           let val = (value/1).toFixed(0).replace('.', ',')
           return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")+'đ'
@@ -56,6 +56,27 @@ export default {
       goToProduct(id){
         this.$router.push('/product/'+id);
       },
-        },
+      },
+      watch:{
+        id(){
+          axios.get('/api/categories/' + this.id)
+                .then(response => {
+                    this.category = response.data;
+                    // console.log(this.category);
+                })
+                .catch(function(err){
+                  console.log(err);
+                });
+          axios.get('/api/category/' + this.id)
+                .then(response => {
+                    this.products = response.data;
+                    this.last_page = response.data.last_page;
+                    // console.log(this.products.data);
+                })
+                .catch(function(err){
+                  console.log(err);
+                });
+        }
+      }
 }
 </script>

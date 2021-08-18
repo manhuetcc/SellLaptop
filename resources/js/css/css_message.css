@@ -80,6 +80,7 @@ body {
     padding: 0px;
     margin: 0px;
     list-style: none;
+    line-height: 35px;
 }
 
 .left-section ul li {
@@ -202,8 +203,9 @@ body {
 
 .message ul li.msg-left img {
     position: absolute;
-    width: 40px;
-    bottom: 30px;
+    width: 33px;
+    height: 30px;
+    border-radius: 50%;
 }
 
 .message ul li.msg-left .msg-desc {
@@ -236,9 +238,10 @@ body {
 
 .message ul li.msg-right img {
     position: absolute;
-    width: 40px;
     right: 0px;
-    bottom: 30px;
+    width: 33px;
+    height: 30px;
+    border-radius: 50%;
 }
 
 .message ul li.msg-right .msg-desc {
@@ -343,14 +346,4 @@ body {
 
 div.inputMsg {
     display: flex;
-    /* position: fixed; */
-}
-
-.msg-right .msg-desc {
-    /* overflow-y: hidden; */
-}
-
-.msg-left .msg-desc {
-    /* overflow-y: hidden;
-    overflow-x: hidden; */
 }

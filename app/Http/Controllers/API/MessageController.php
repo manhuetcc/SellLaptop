@@ -42,17 +42,35 @@ class MessageController extends Controller
         return response()->json(['message' => $message]);
     }
 
+    public function requestBot(Request $request)
+    {
+        $message = new Message();
+        $message->content = $request->content;
+        $message->channel = $request->channel;
+        $message->sender = 1;
+        $message->save();
+        broadcast(new MessagePosted($message))->toOthers();
+        return response()->json(['message' => $message]);
+    }
     //lay danh sach nguoi gui
     public function listMessage()
     {
         $listMessage = DB::table('messages')
             ->groupBy('channel')
-            ->orderBy('updated_at')
+            ->orderBy('updated_at', 'desc')
             ->get();
         return response()->json(
             [
                 $listMessage,
             ]
         );
+    }
+
+    //lay danh sach tin nhan mau
+    public function msgResponse()
+    {
+        $listMessage = DB::table('chatbots')->select('msg', 'response as respond')
+            ->get();
+        return  $listMessage;
     }
 }

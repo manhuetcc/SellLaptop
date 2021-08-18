@@ -58,5 +58,8 @@ Route::get('/messages', [App\Http\Controllers\API\MessageController::class, 'ind
 Route::get('/messages/{id}', [App\Http\Controllers\API\MessageController::class, 'getMessage']);
 //api
 Route::post('/messages', [App\Http\Controllers\API\MessageController::class, 'store']);
+Route::post('/messagerespond', [App\Http\Controllers\API\MessageController::class, 'requestBot']);
 //qpi get list message
 Route::get('/listmessages', [App\Http\Controllers\API\MessageController::class, 'listMessage'])->middleware('admin');
+//api get bot's message 
+Route::get('/msgrespond', [App\Http\Controllers\API\MessageController::class, 'msgResponse']);

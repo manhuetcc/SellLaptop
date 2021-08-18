@@ -183,7 +183,7 @@ select:focus {
     background: white;
     border: #666;
     border-style: groove;
-    border-width: 1px
+    border-width: 1px;
 }
 
 .inputmsg textarea {
@@ -227,7 +227,9 @@ ul.chat-box {
     padding-left: 0px;
     flex-direction: column;
     list-style-type: none;
+    position: relative;
 }
+
 
 .client {
     /* background-color: rgb(0, 132, 255); */
@@ -236,35 +238,38 @@ ul.chat-box {
     padding-left: 12px;
     margin-bottom: 0px;
     margin-top: 0px;
-    text-align: right;
+    text-align: left;
+    max-width: 80%;
 }
 
-.client p {
+.client {
     background-color: rgb(0, 132, 255);
-    color: #ffffff;
-    padding-right: 5px;
     color: #ffffff;
     float: right;
     border-radius: 4px;
     padding-left: 5px;
+    padding-right: 5px;
+    word-wrap: break-word;
+
 }
 
 .server {
     /* background-color: rgb(0, 132, 255); */
-    overflow-y: hidden;
-    padding-left: 12px;
+    /* overflow-y: ; */
+    padding-left: 5px;
     margin-bottom: 0px;
     margin-top: 0px;
     text-align: left;
     float: left;
 }
 
-.server p {
+.server {
     background-color: #e4e6eb;
     color: #050505;
     padding-right: 5px;
     float: left;
     border-radius: 4px;
+    width: fit-content;
 }
 
 li.server {
@@ -274,8 +279,17 @@ li.server {
 
 li.client {
     height: 40px;
+    margin-right: 0px;
 }
 
 .inputmsg {
     display: flex;
+}
+
+.chat-box-list-container ul li {
+    /* padding: 15px 0px; */
+    clear: both;
+    margin: 10px;
+    width: fit-content;
+    height: fit-content;
 }
