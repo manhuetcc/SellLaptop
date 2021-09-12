@@ -12,7 +12,7 @@
                         </div>
 				    </div>             
                 </div>
-                <div class="col2">
+                <div class="col2" v-if="product[0] != null">
                     <h2>{{ product[0].name }}</h2>
                     <p><b>{{ formatPrice(product[0].price)+"đ"}}</b></p>
                     <h3>Tình trạng : {{product[1].name}}</h3>

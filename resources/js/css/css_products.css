@@ -178,8 +178,8 @@ select:focus {
     position: fixed;
     right: 0px;
     bottom: 0px;
-    grid-template-columns: 190px 60px;
-    grid-template-rows: 26px 245px 40px;
+    grid-template-columns: 220px 65px;
+    grid-template-rows: 26px 260px 85px 40px;
     background: white;
     border: #666;
     border-style: groove;
@@ -208,6 +208,9 @@ div.item2 {
     width: 200px;
     border-left-width: 1px;
     padding-left: 1px;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    display: flex;
 }
 
 .item2 button {
@@ -267,7 +270,6 @@ ul.chat-box {
     background-color: #e4e6eb;
     color: #050505;
     padding-right: 5px;
-    float: left;
     border-radius: 4px;
     width: fit-content;
 }
@@ -282,14 +284,37 @@ li.client {
     margin-right: 0px;
 }
 
-.inputmsg {
-    display: flex;
-}
-
 .chat-box-list-container ul li {
     /* padding: 15px 0px; */
     clear: both;
     margin: 10px;
     width: fit-content;
     height: fit-content;
+}
+
+/* goi y de hoi */
+div.hint {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 3;
+    grid-row-end: 4
+}
+
+ul.quick-reply {
+    list-style-type: none;
+    padding-left: 0px;
+    line-height: 2;
+}
+
+.quick-reply li {
+    color: #007bff;
+    font-size: 14px;
+    border-color: #007bff;
+    border-style: solid;
+    line-height: 1.5;
+    display: inline-flex;
+    margin-right: 4px;
+    padding: 2px;
+    border-radius: .2rem;
+    border-width: 2px;
 }

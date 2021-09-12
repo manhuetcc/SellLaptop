@@ -62,4 +62,10 @@ class OrderController extends Controller
             'totalOrders' => $listOrder->count()
         ]);
     }
+    public function manageOrder()
+    {
+        $id = Auth()->id();
+        $myorder = Order::find($id);
+        return $myorder;
+    }
 }

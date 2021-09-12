@@ -17,12 +17,12 @@
 <div class="body-section">
 <div class="left-section mCustomScrollbar" data-mcs-theme="minimal-dark">
 <ul>
-    <li>
+    <li v-if="listUser[0]!=null">
         <div class="chatList" v-for="(listmsg, index) in listMessage[0]" :key="index" @click="currentChannel=listmsg.channel ">
             <div class="img">
                 <img :src="'/uploads/avatar/' + listmsg.sender+'/'+listUser[listmsg.sender-1].avatar">
             </div>
-            <div  class="desc">
+            <div  class="desc" >
                  <small class="time">05:30 am</small> 
                 <h5>{{listUser[listmsg.channel-1].name}}</h5>
                   <small>Message</small>
@@ -77,7 +77,7 @@
             </div>
             <div class="inputMsg">
                 <input  v-model="inputMessage" type="text" name="" placeholder="type here..." v-on:keydown.enter.prevent="saveMessage($event,inputMessage)">
-                <button class="btn-send" @click="saveMessage($event,inputMessage)"> Sent</button>
+                <button class="btn-send" @click="saveMessage($event,inputMessage)"> Send</button>
             </div>
         </form>
     </div>
@@ -215,18 +215,7 @@ export default {
          Echo.private(`channel.${this.currentChannel}`)
         .listen('MessagePosted', (e) => {
           this.messages.push(e.message)
-          // const obj = this.msgRespond.find(o => o.msg == e.message.content);
-          // let index = this.msgRespond.findIndex(function(post, index) {
-          //   if(post.msg == e.message.content)
-          //     return true;
-          // });
-         // if(index != -1) this.respondMessage(this.msgRespond[index].respond);
-          // if(obj != null){
-          //   this.respondMessage(obj.respond);
-          // }
-
-          //this.messages.push(obj);
-          //this.getListUser();       
+          // if(e.message.content)    
         })
         this.$nextTick(() => {
           this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight

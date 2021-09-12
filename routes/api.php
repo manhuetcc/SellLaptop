@@ -37,7 +37,7 @@ Route::get('/newproduct', [App\Http\Controllers\API\ProductController::class, 'n
 // api don hang
 Route::post('/order', [App\Http\Controllers\API\OrderController::class, 'store'])->middleware('user');
 Route::get('/listorder', [App\Http\Controllers\API\OrderController::class, 'listOrder'])->middleware('user');
-
+Route::get('/myorder', [App\Http\Controllers\API\OrderController::class, 'manageOrder'])->middleware('user');
 //api danh muc san pham
 Route::get('category', [App\Http\Controllers\API\CategoryController::class, 'index']);
 Route::get('categories/{id}', [App\Http\Controllers\API\CategoryController::class, 'show']);

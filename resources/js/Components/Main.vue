@@ -60,8 +60,14 @@
                 </li>
               </ul>
             </div>
+            <div class="hint">
+              <ul class="quick-reply">
+                <li v-for="(hint, index) in tempSuggest" :key="index" @click="controlConversation(index)">{{hint.ask}}</li>
+                <li v-if="this.temp.length!=0" @click="backthen()"> Quay lại</li>
+              </ul>
+            </div>
             <div class="inputmsg">
-              <textarea  placeholder="type message" v-model="message" v-on:keydown.enter.prevent="saveMessage($event,message)" >
+              <textarea  placeholder="type message" v-model="message" v-on:keydown.enter.prevent="saveMessage(message)" >
               </textarea>
               <button>
                 <img src="https://img1.pnghut.com/17/6/22/AfzgpxrSsa/blog-font-awesome-symbol-brand-logo.jpg" @click="saveMessage($event,message)" height="27px" width="30px">
@@ -91,11 +97,17 @@ import Search from './Search.vue'
         this.getMessages();
         this.getMessageRespond();
         this.latestProduct();
+        this.getProducts();
+        this.getMyorder();
+        this.tempSuggest=this.defaultSuggest;
+        this.prevMessage=this.defaultSuggest;
       },
         data() {
             return {
                 user: [],
                 categories: [],
+                products:[],
+                myorder:[],
                 keyword: '',
                 isuser: false,
                 show_profile: false,
@@ -107,6 +119,26 @@ import Search from './Search.vue'
                 msgRespond:[],
                 latestPoduct:[],
                 countMsg:0,
+                productByKeyWord:[],
+                tempMsg:'',
+                defaultSuggest:[
+                  {
+                    ask:'Tư vấn sản phẩm',
+                    subask:[
+                      {ask:'Dell',subask:[{ask:'Dell xps',subask:[]},{ask:'Dell Inspiron',subask:[]}]},
+                      {ask:'Asus',subask:[{ask:'Asus TUF',subask:[]},{ask:'Asus Vivo',subask:[]}]},
+                      {ask:'Macbook',subask:[{ask:'Macbook Pro',subask:[]},{ask:'Macbook Air',subask:[]}]},
+                      {ask:'sản phẩm mới nhất',subask:[]},
+                      {ask:'các sản phẩm',subask:[]}
+                      ]
+                  },
+                  {ask:'Kiểm tra đơn hàng',subask:[{ask:'Đã nhận',subask:[]},{ask:'Đang vận chuyển',subask:[]},{ask:'Bị hủy',subask:[]}  ]},
+                  {ask:'Tra cứu bảo hành',subask:[]},
+                  {ask:'Chat với nhân viên',subask:[]},
+                  ],
+                  tempSuggest:[],
+                  prevMessage:'',
+                  temp:[],
                 //listUser:[],
             }
         },
@@ -140,11 +172,14 @@ import Search from './Search.vue'
                 console.log('Loi tai danh muc san pham');
               });
         },
-
+        computed:{
+          
+        },
         methods: {
           openDialog(){
             if(this.isAdmin!=2){
             this.dialogChat = true;
+            this.saveMessage('Chào bạn mình có thể giúp gì cho bạn?')
             this.$nextTick(() => {
                   this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
                   })
@@ -174,8 +209,18 @@ import Search from './Search.vue'
           console.log(error)
         }
         },
+        //api get product
+        async getProducts(){
+          try {
+          const response = await axios.get('/api/products')
+          this.products = response.data
+          console.log(this.products.data[0].name);
+        } catch (error) {
+          console.log(error)
+        }
+        },
         //getuser
-        async getUser(){
+      async getUser(){
         try {
         const response = await axios.get(`/api/profile`)
         this.user = response.data;
@@ -184,17 +229,16 @@ import Search from './Search.vue'
       } catch (error) {
         console.log(error)
       }
-    },
-    //
-    // async getListUser(){
-    //     try {
-    //     const response = await axios.get(`/api/listuser`)
-    //     this.listUser = response.data
-    //   } catch (error) {
-    //     console.log(error)
-    //   }
-    // },
-    //
+      },
+    //get myorder
+    async getMyorder(){
+        try {
+        const response = await axios.get(`/api/listorder`)
+        this.myorder = response.data.listOrders;
+      } catch (error) {
+        console.log(error)
+      }
+      },
     async getMessageRespond(){
         try {
         const response = await axios.get(`/api/msgrespond`)
@@ -203,8 +247,36 @@ import Search from './Search.vue'
         console.log(error)
       }
     },
+    async searchkeyword(keyword){
+      axios.get('/api/products?key=' + keyword)
+        .then(response => {
+        this.productByKeyWord = response.data.data
+          })          
+        .catch(function(err){
+            console.log(err);
+        });
+    },
+    //dan dat cuoc hoi thoai
+    controlConversation(index){
+        this.temp.push(index)
+        this.saveMessage(this.tempSuggest[index].ask)
+        if(this.temp.length==1) this.tempSuggest=this.defaultSuggest[index].subask;
+        else{
+            this.tempSuggest=this.tempSuggest[this.temp[this.temp.length-1]].subask
+        }
+    },
+        //back to main request
+    backthen(){
+      if(this.temp.length>0) this.temp.pop();
+      this.prevMessage=this.defaultSuggest;
+      for(let i=0;i<this.temp.length;i++)
+      {
+        this.prevMessage=this.prevMessage[this.temp[i]].subask;
+      }
+      this.tempSuggest=this.prevMessage;
+    },
     //phan hoi noi dung da fix trong chatbot
-    checkMessage(content){
+     async checkMessage(content){
           axios.post('/api/messagerespond', {
             channel: this.user[0].id,
             content:content,
@@ -212,11 +284,10 @@ import Search from './Search.vue'
           })
             .then(response => {
                 this.messages.push(response.data.message);
-                this.countMsg++;
+                // this.countMsg++;
                 this.$nextTick(() => {
                 this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
                 })
-                console.log(response.data);
                 this.message='';
             })
             .catch(function(err){
@@ -229,15 +300,131 @@ import Search from './Search.vue'
           {
             const str = content;
             const words = str.split(' ');
+            var categoryId = -1;
+            var indexCategory =-1;
             if(words.includes('hi')) return "Chào "+this.user[0].name;
-            for(let j=0; j<this.categories.length;j++)
+            if(str.includes('Tư vấn sản phẩm')){
+              return 'Bạn hãy nhập tên nhà sản xuất hoặc tên máy theo mẫu'
+            }
+            if(str.includes('Kiểm tra đơn hàng')){
+              return 'Bạn hãy nhập trạng thái của đơn hàng'
+            }
+            if(str.includes('Tra cứu bảo hành')){
+              let tempList='';
+              let countList=0;
+              for(let i=0;i<this.myorder.length;i++)
               {
-                if(words.includes(this.categories[j].name)) return 'Đây là danh mục sản phẩm '+this.categories[j].name+' 127.0.0.1:8000/category/' + this.categories[j].id
+                if(this.myorder[i].status_name == 'Hoàn thành')
+                {
+                  countList++;
+                  tempList+=this.myorder[i].product_name+' thời gian mua '+this.myorder[i].created_at
+                }
               }
+              if(countList==0) return 'Bạn chưa mua sản phẩm nào tại shop';
+              return "Sản phẩm bạn đã mua tại shop "+countList+' sản phẩm gồm: '+tempList;
+            }
+            if(str.includes('Chat với nhân viên')){
+              return 'Chúng tôi sẽ liên hệ với tư vấn viên để liên hệ sớm nhất lại với bạn'
+            }
+            //kiem tra don hang cua khach
+            if(str.includes('Đã nhận'))
+            {
+              let tempList='';
+              let countList=0;
+              for(let i=0;i<this.myorder.length;i++)
+              {
+                if(this.myorder[i].status_name == 'Hoàn thành')
+                {
+                  countList++;
+                  tempList+=this.myorder[i].product_name+' '
+                }
+              }
+              if(countList==0) return 'Bạn không có đơn hàng được vận chuyển thành công';
+              return "Đơn hàng đã vận chuyển thành công "+countList+' đơn hàng gồm: '+tempList;
+            }
+            //shipping
+            if(str.includes('Đang vận chuyển'))
+            {
+              let tempList='';
+              let countList=0;
+              for(let i=0;i<this.myorder.length;i++)
+              {
+                if(this.myorder[i].status_name == 'Đang giao hàng')
+                {
+                  countList++;
+                  tempList+=this.myorder[i].product_name+' '
+                }
+              }
+              if(countList==0) return 'Bạn không có đơn hàng nào đang vận chuyển';
+              return "Đơn hàng đang vận chuyển "+countList+' đơn hàng gồm: '+tempList;
+            }
+            //cancel
+            if(str.includes('Bị hủy'))
+            {
+              let tempList='';
+              let countList=0;
+              for(let i=0;i<this.myorder.length;i++)
+              {
+                if(this.myorder[i].status_name == 'Bị hủy')
+                {
+                  countList++;
+                  tempList+=this.myorder[i].product_name+' '
+                }
+              }
+              if(countList==0) return 'Bạn không có đơn hàng nào bị hủy';
+              return "Đơn hàng đang vận chuyển "+countList+' đơn hàng gồm: '+tempList;
+            }
+            //cac loai san pham
+            if(str.includes('các sản phẩm')) 
+            {
+              let cate=" ";
+              for(let i=0;i<this.categories.length;i++)
+              {
+                cate+=this.categories[i].name+' '
+              }
+              return 'shop có '+this.categories.length+' hãng là: '+cate+' và có tổng cộng '+this.products.data.length +' sản phẩm';
+            }            
+            //san pham moi nhat
             if(str.includes("sản phẩm mới nhất")) return 'Đây là sản phẩm mới nhất ' + this.latestPoduct[0].name
+            for(let j=0; j<this.categories.length;j++)
+            {
+              if(words.includes(this.categories[j].name)) 
+              {
+                categoryId = this.categories[j].id             
+              }            
+            }
+            //lay index cua san pham trong str
+            if(categoryId!=-1) indexCategory = words.indexOf(this.categories[categoryId-1].name);
+            console.log('index'+indexCategory);
+            // Lay ra san pham cua khach hang
+            if(indexCategory!=-1 && indexCategory != (words.length-1))
+            {
+              var result="";
+              let keyWord = words.slice(indexCategory,indexCategory+2).join(" ");
+              axios.get('/api/products?key=' + keyWord)
+              .then(response => {
+                  this.productByKeyWord= response.data.data;
+              if(this.productByKeyWord.length != 0) 
+              {
+                result +='Danh sách '+keyWord+' có '+this.productByKeyWord.length+' sản phẩm: '
+                for(let i=0;i<this.productByKeyWord.length;i++)
+                {
+                  result += this.productByKeyWord[i].name+',  \n';
+                }
+                this.tempMsg = result;
+                console.log(result);
+              }
+              })
+              .catch(function(err){
+                console.log(err);
+              });            
+                //neu api co ket qua thi tra ve cho khach
+            }
+            else if(categoryId!=-1) return 'Đây là danh mục sản phẩm '+this.categories[categoryId-1].name+' 127.0.0.1:8000/category/' + this.categories[categoryId-1].id;
+            // chuyen huong toi tu van vien
             if(this.countMsg >= 6) return "Tôi sẽ liên hệ tư vấn viên của shop để trả lời cho bạn"
             return 0;
-          },
+          }, 
     /////////////////
           search(event) {
             event.preventDefault();
@@ -258,14 +445,14 @@ import Search from './Search.vue'
             //event.preventDefault();
             this.$router.push('/category/' + id);
           },
-          saveMessage(event,content){
-            event.preventDefault();
+          saveMessage(content){
             axios.post('/api/messages', {
               channel: this.user[0].id,
               content
             })
               .then(response => {
                   this.messages.push(response.data.message);
+                  this.message='';
                   this.$nextTick(() => {
                   this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
                   })
@@ -275,11 +462,10 @@ import Search from './Search.vue'
                 });
               //phan hoi theo nhung cau co san trong bang chatbots
               if(index != -1) this.checkMessage(this.msgRespond[index].respond);  
-              //neu co nhung cau trong ham upgradebot thi pha hoi  
+              //neu co nhung cau trong ham upgradebot thi phan hoi  
               if(this.upgradeBot(content)){
                   this.checkMessage(this.upgradeBot(content));       
               }
-                  this.message='';
               })
               .catch(function(err){
                 console.log(err);
@@ -294,6 +480,16 @@ import Search from './Search.vue'
                 else {
                     this.isuser = false;
                 }
+            },
+            tempMsg(){
+              if(this.tempMsg!='')
+              {
+                this.checkMessage(this.tempMsg);
+                  this.message='';
+              }
+            },
+            temp(){
+              
             }
         }
 }
